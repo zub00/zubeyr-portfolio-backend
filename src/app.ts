@@ -1,23 +1,21 @@
-// src/app.ts
-
-import express from "express";
-import profileRoutes from "./routes/profileRoutes";
-import swaggerUi from "swagger-ui-express";
-import swaggerJSDoc from "swagger-jsdoc";
-import swaggerSpec from "./swaggerdef";
+import express from 'express';
+import cors from 'cors';
+import profileRoutes from './routes/profileRoutes';
+import swaggerUi from 'swagger-ui-express';
+import swaggerSpec from './swaggerdef';
+import contactRoutes from './routes/contactMe';
+import { swaggerDocument } from './swaggerdef';
 
 const app = express();
-const cors = require("cors");
 
+app.use(cors({ origin: 'http://localhost:3000' })); // Ensure this matches your frontend's URL
 app.use(express.json());
-
-app.use(cors());
-
-app.use(profileRoutes);
-// Add other route middlewares similarly
-
 app.use(express.urlencoded({ extended: true }));
 
-app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
+app.use('/api', profileRoutes);
+app.use('/api', contactRoutes);
+
+// Swagger documentation
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
 export default app;
