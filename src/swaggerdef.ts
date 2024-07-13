@@ -4,9 +4,9 @@ const options: Options = {
   definition: {
     openapi: "3.0.0",
     info: {
-      title: "Profile API",
+      title: "Profile and Contact API",
       version: "1.0.0",
-      description: "APIs for managing profiles",
+      description: "APIs for managing profiles and contacts",
     },
     servers: [
       {
@@ -38,55 +38,74 @@ const options: Options = {
           },
           required: ["name"], // Specify required properties
         },
-      },
-    },
-  },
-  apis: ["./src/routes/*.ts"], // Path to the files containing your API routes
-};
-
-// contacts
-
-export const swaggerDocument = {
-  openapi: '3.0.0',
-  info: {
-    title: 'Your API',
-    version: '1.0.0',
-    description: 'API Documentation',
-  },
-  components: {
-    schemas: {
-      Contact: {
-        type: 'object',
-        properties: {
-          fullName: {
-            type: 'string',
+        Contact: {
+          type: "object",
+          properties: {
+            fullName: { type: "string" },
+            email: { type: "string" },
+            // Optionally include other properties like createdAt, updatedAt if needed
           },
-          email: {
-            type: 'string',
-          },
-          // Optionally include other properties like createdAt, updatedAt if needed
+          required: ["fullName", "email"],
         },
-        required: ['fullName', 'email'],
       },
     },
-  },
-  paths: {
-    '/api/contact': {
-      post: {
-        summary: 'Create a new contact entry',
-        requestBody: {
-          required: true,
-          content: {
-            'application/json': {
-              schema: {
-                $ref: '#/components/schemas/Contact', // Reference to the Contact schema
+    paths: {
+      '/api/profiles': {
+        get: {
+          summary: 'Get all profiles',
+          responses: {
+            '200': {
+              description: 'OK',
+              content: {
+                'application/json': {
+                  schema: {
+                    type: 'array',
+                    items: {
+                      $ref: '#/components/schemas/Profile', // Reference to the Profile schema
+                    },
+                  },
+                },
               },
+            },
+            '500': {
+              description: 'Internal Server Error',
             },
           },
         },
-        responses: {
-          '201': {
-            description: 'Created',
+        post: {
+          summary: 'Create a new profile',
+          requestBody: {
+            required: true,
+            content: {
+              'application/json': {
+                schema: {
+                  $ref: '#/components/schemas/Profile', // Reference to the Profile schema
+                },
+              },
+            },
+          },
+          responses: {
+            '201': {
+              description: 'Created',
+              content: {
+                'application/json': {
+                  schema: {
+                    $ref: '#/components/schemas/Profile', // Reference to the Profile schema
+                  },
+                },
+              },
+            },
+            '500': {
+              description: 'Internal Server Error',
+            },
+          },
+        },
+      },
+      '/api/contacts': {
+        post: {
+          summary: 'Create a new contact entry',
+          requestBody: {
+            required: true,
             content: {
               'application/json': {
                 schema: {
@@ -95,34 +114,47 @@ export const swaggerDocument = {
               },
             },
           },
-          '500': {
-            description: 'Internal Server Error',
-          },
-        },
-      },
-      get: {
-        summary: 'Get all contacts',
-        responses: {
-          '200': {
-            description: 'OK',
-            content: {
-              'application/json': {
-                schema: {
-                  type: 'array',
-                  items: {
+          responses: {
+            '201': {
+              description: 'Created',
+              content: {
+                'application/json': {
+                  schema: {
                     $ref: '#/components/schemas/Contact', // Reference to the Contact schema
                   },
                 },
               },
             },
+            '500': {
+              description: 'Internal Server Error',
+            },
           },
-          '500': {
-            description: 'Internal Server Error',
+        },
+        get: {
+          summary: 'Get all contacts',
+          responses: {
+            '200': {
+              description: 'OK',
+              content: {
+                'application/json': {
+                  schema: {
+                    type: 'array',
+                    items: {
+                      $ref: '#/components/schemas/Contact', // Reference to the Contact schema
+                    },
+                  },
+                },
+              },
+            },
+            '500': {
+              description: 'Internal Server Error',
+            },
           },
         },
       },
     },
   },
+  apis: ["./src/routes/*.ts"], // Path to the files containing your API routes
 };
 
 const swaggerSpec = swaggerJSDoc(options);
